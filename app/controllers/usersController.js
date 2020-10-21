@@ -1,5 +1,31 @@
 const Users = require("../models/users.js");
+const { Op } = require("sequelize");
 
+// список пользователей
+exports.listUsers = function(request, response){
+
+	Users.findAll({
+		where: {
+			status: {
+				[Op.or]: [null, 1]
+			}
+		},
+		order: [
+			['id', 'DESC']
+		]
+	})
+	.then(function(request){
+		response.send(request);
+
+	}).catch(function(err){
+		response.send("Ошибка");
+
+		console.log("Ошибка");
+	});
+};
+
+
+// добавить пользователя
 exports.addUser = function(request, response){
 
 	let requestInformation = {
@@ -78,19 +104,23 @@ exports.addUser = function(request, response){
 		});
 
 		response.send(requestInformation);
-
-		
 	});
 };
 
-exports.listUsers = function(request, response){
 
-	Users.findAll()
+// обновить пользователя
+exports.delUser = function(request, response){
+
+	let idUser = request.body.id;
+	let statusUser = request.body.status;
+
+	Users.update({status: statusUser}, {
+		where: {
+			id: idUser
+		}
+	})
 	.then(function(request){
-
-		response.send(request);
-
-		
+		response.send("Успех");
 
 	}).catch(function(err){
 		response.send("Ошибка");
