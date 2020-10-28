@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const jwt = require('jsonwebtoken');
 const sequelize = require('../../db');
 
 const Users = sequelize.define("user", {
@@ -44,7 +45,11 @@ const Users = sequelize.define("user", {
 		type: Sequelize.STRING,
 		allowNull: true
 	},
-	status: {
+	hidden: {
+		type: Sequelize.INTEGER,
+		allowNull: true
+	},
+	deleted: {
 		type: Sequelize.INTEGER,
 		allowNull: true
 	}

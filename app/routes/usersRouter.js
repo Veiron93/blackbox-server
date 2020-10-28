@@ -4,6 +4,7 @@ const usersRouter = express.Router();
 
 usersRouter.use("/add", usersController.addUser);
 usersRouter.use("/del-user", usersController.delUser);
+usersRouter.use("/hidden", usersController.hiddenUser);
 usersRouter.use("/", usersController.listUsers);
  
 module.exports = usersRouter;

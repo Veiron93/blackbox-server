@@ -6,8 +6,8 @@ exports.listUsers = function(request, response){
 
 	Users.findAll({
 		where: {
-			status: {
-				[Op.or]: [null, 1]
+			deleted: {
+				[Op.is]: null
 			}
 		},
 		order: [
@@ -108,13 +108,35 @@ exports.addUser = function(request, response){
 };
 
 
-// обновить пользователя
+// удалить пользователя
 exports.delUser = function(request, response){
 
 	let idUser = request.body.id;
-	let statusUser = request.body.status;
+	let value = request.body.value;
 
-	Users.update({status: statusUser}, {
+	Users.update({deleted: value}, {
+		where: {
+			id: idUser
+		}
+	})
+	.then(function(request){
+		response.send("Успех");
+
+	}).catch(function(err){
+		response.send("Ошибка");
+
+		console.log("Ошибка");
+	});
+};
+
+
+// скрыть пользователя
+exports.hiddenUser = function(request, response){
+
+	let idUser = request.body.id;
+	let value = request.body.value;
+
+	Users.update({hidden: value}, {
 		where: {
 			id: idUser
 		}
