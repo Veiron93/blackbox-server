@@ -1,5 +1,4 @@
 const Sequelize = require('sequelize');
-const jwt = require('jsonwebtoken');
 const sequelize = require('../../db');
 
 const Users = sequelize.define("user", {

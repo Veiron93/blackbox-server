@@ -16,6 +16,7 @@ exports.listUsers = function(request, response){
 	})
 	.then(function(request){
 		response.send(request);
+		console.log("успешно");
 
 	}).catch(function(err){
 		response.send("Ошибка");
