@@ -22,23 +22,23 @@ const Users = sequelize.define("user", {
 	},
 	email: {
 		type: Sequelize.STRING,
-		allowNull: false,
-		unique: true,
-		validate: {
-			isEmail: true,
-		}
+		allowNull: true,
+		// unique: true,
+		// validate: {
+		// 	isEmail: true,
+		// }
 	},
 	password: {
 		type: Sequelize.STRING,
-		allowNull: false
+		allowNull: true
 	},
 	phone: {
 		type: Sequelize.INTEGER,
-		allowNull: true,
-		unique: true,
-		validate: {
-			not: ["[a-z]",'i']
-		}
+		allowNull: false,
+		// unique: true,
+		// validate: {
+		// 	not: ["[a-z]",'i']
+		// }
 	},
 	address: {
 		type: Sequelize.STRING,

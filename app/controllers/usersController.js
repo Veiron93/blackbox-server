@@ -1,6 +1,90 @@
 const Users = require("../models/users.js");
 const { Op } = require("sequelize");
 
+const formHelper = require("../helpers/form.js");
+
+
+// function requestStatus(message, type = "success"){
+
+// 	let dataRequest = {
+// 		type: type, // тип success || error
+// 		msg: [
+// 			// object {nameInput: имя input если ошибка, text: текст}
+// 		] 
+// 	};
+
+// 	if(type == "success"){
+// 		dataRequest.msg.push({text: message})
+
+// 	}else if(type == "error"){
+
+// 		let errors = [];
+
+// 		message.forEach(error => {
+
+// 			if(error.type == "unique violation"){
+// 				errors.push(
+// 					{
+// 						nameInput: error.path, 
+// 						text: "Пользователь с таким " + nameInput("unique", error.path) + " уже существует"
+// 					}
+// 				);
+// 			}else if(error.type == "notNull Violation"){
+// 				errors.push(
+// 					{
+// 						nameInput: error.path, 
+// 						text: "Не заполнено обязательное поле " + nameInput("notNull", error.path)
+// 					}
+// 				);
+// 			}
+// 		});
+
+// 		dataRequest.msg.push(...errors)
+// 	}
+
+// 	return dataRequest;
+// }
+
+
+// function nameInput(typeError, code){
+// 	let name = "";
+
+// 	if(typeError == "unique"){
+
+// 		switch(code){
+// 			case "phone":
+// 				name = "Телефоном";
+// 				break;
+// 			case "email":
+// 				name = "Email";
+// 				break;
+// 			default:
+// 				name = code;
+// 		}
+
+// 	}else if(typeError == "notNull"){
+
+// 		switch(code){
+// 			case "first_name":
+// 				name = "Имя";
+// 				break;
+// 			case "last_name":
+// 				name = "Фамилия";
+// 				break;
+// 			case "phone":
+// 				name = "Телефон";
+// 				break;
+// 			case "password":
+// 				name = "Пароль";
+// 				break;
+// 			default:
+// 				name = code;
+// 		}
+// 	}
+
+// 	return name;
+// }
+
 // список пользователей
 exports.listUsers = function(request, response){
 
@@ -29,82 +113,37 @@ exports.listUsers = function(request, response){
 // добавить пользователя
 exports.addUser = function(request, response){
 
-	let requestInformation = {
-		type: null,
-		msg: []
-	};
+	let data = {};
 
+	for (key in request.body){
 
+		let value = request.body[key];
+		
+		if(value){
+			value = value.trim(); // удаляем пробелы
+			value = value.replace(/<[^>]+>/g,''); // удаляем code
+		}	
 
-
-	// let firstName = request.body.firstName.trim().replace(/<[^>]+>/g,'');
-	// let lastName = request.body.lastName.trim().replace(/<[^>]+>/g,'');
-	// let patronym = request.body.patronym.trim().replace(/<[^>]+>/g,'');
-	// let email = request.body.email.trim().replace(/<[^>]+>/g,'');
-	// let password = request.body.password.trim().replace(/<[^>]+>/g,'');
-	// let phone = request.body.phone.trim().replace(/<[^>]+>/g,'');
-	// let address = request.body.address.trim().replace(/<[^>]+>/g,'');
-
-	
-
-
-	let firstName = request.body.firstName;
-	let lastName = request.body.lastName;
-	let patronym = request.body.patronym;
-	let email = request.body.email;
-	let password = request.body.password;
-	let phone = request.body.phone;
-	let address = request.body.address;
-
-	
+		data[key] = value;
+	}
 
 	Users.create({
-		first_name: firstName,
-		last_name: lastName,
-		patronym: patronym,
-		email: email,
-		password: password,
-		phone: phone,
-		address: address,
+		first_name: data.firstName,
+		last_name: data.lastName,
+		patronym: data.patronym,
+		phone: data.phone,
+		email: data.email,
+		password: data.password,
+		address: data.address,
 		status: "1"
 
-	}).then(function(request){
+	}).then(request => {
 
-		requestInformation.type = "success";
-		requestInformation.msg.push(
-			{
-				nameInput: null, 
-				text: "Пользователь успешно добавлен"
-			}
-		);
+		response.send(formHelper.requestStatus("Пользователь успешно добавлен"));
 
-		response.send(requestInformation);
+	}).catch(err => {
 
-	}).catch(function(err){
-
-		requestInformation.type = "error";
-
-		err.errors.forEach(error => {
-			if(error.path == "email" && error.type == "unique violation"){
-				requestInformation.msg.push(
-					{
-						nameInput: error.path, 
-						text: "Пользователь с таким Email уже существует"
-					}
-				);
-			}	
-			
-			if(error.path == "phone" && error.type == "unique violation"){
-				requestInformation.msg.push(
-					{
-						nameInput: error.path, 
-						text: "Пользователь с таким Номером телефона уже существует"
-					}
-				);
-			}
-		});
-
-		response.send(requestInformation);
+		response.send(formHelper.requestStatus(err.errors, "error"));
 	});
 };
 
